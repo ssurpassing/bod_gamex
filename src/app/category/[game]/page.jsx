@@ -54,17 +54,17 @@ const CategoryPage = ({ params }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-50">
         {/* Category Header Skeleton */}
         <div className="container-custom py-12">
-          <div className="h-8 bg-gray-800 rounded-lg w-64 mb-4 animate-pulse"></div>
-          <div className="h-4 bg-gray-800 rounded-lg w-96 mb-8 animate-pulse"></div>
+          <div className="h-8 bg-gray-200 rounded-lg w-64 mb-4 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded-lg w-96 mb-8 animate-pulse"></div>
 
           {/* Filters Skeleton */}
           <div className="flex flex-wrap gap-4 mb-8">
-            <div className="h-10 bg-gray-800 rounded-lg w-32 animate-pulse"></div>
-            <div className="h-10 bg-gray-800 rounded-lg w-32 animate-pulse"></div>
-            <div className="h-10 bg-gray-800 rounded-lg w-32 animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded-lg w-32 animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded-lg w-32 animate-pulse"></div>
+            <div className="h-10 bg-gray-200 rounded-lg w-32 animate-pulse"></div>
           </div>
 
           {/* Games Grid Skeleton */}
@@ -76,7 +76,7 @@ const CategoryPage = ({ params }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😞</div>
           <h1 className="text-2xl font-bold text-text-primary mb-2">Oops! Something went wrong</h1>
@@ -94,7 +94,7 @@ const CategoryPage = ({ params }) => {
 
   if (games.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🎮</div>
           <h1 className="text-2xl font-bold text-text-primary mb-2">No Games Found</h1>
@@ -123,7 +123,7 @@ const CategoryPage = ({ params }) => {
       <WebsiteStructuredData />
       <BreadcrumbStructuredData items={breadcrumbData} />
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-white via-green-50 to-emerald-50">
         {/* Category Header */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 backdrop-blur-3xl"></div>
@@ -223,16 +223,17 @@ const CategoryPage = ({ params }) => {
       </section>
 
       {/* Games Grid/List */}
-      <section className="container-custom py-12">
+      <section className="container-custom py-8 px-4 sm:px-6 lg:px-8">
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {sortedGames.map((game) => (
-              <GameCard
-                key={game.id}
-                game={game}
-                showViews={true}
-                priority={sortedGames.indexOf(game) < 12}
-              />
+              <div key={game.id} className="transform transition-all duration-300 hover:scale-105">
+                <GameCard
+                  game={game}
+                  showViews={true}
+                  priority={sortedGames.indexOf(game) < 12}
+                />
+              </div>
             ))}
           </div>
         ) : (
@@ -296,9 +297,9 @@ const CategoryPage = ({ params }) => {
       )}
 
       {/* Related Categories */}
-      <section className="container-custom pb-16">
-        <h2 className="text-2xl font-bold text-text-primary mb-8">Related Categories</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <section className="container-custom py-8 px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl font-bold text-text-primary mb-6">Related Categories</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {SITE_CONFIG.categories
             .filter(cat => cat.name !== categoryInfo.name)
             .slice(0, 8)
@@ -306,12 +307,12 @@ const CategoryPage = ({ params }) => {
               <Link
                 key={category.slug}
                 href={`/category/${category.name}`}
-                className="category-card p-6 text-center group"
+                className="bg-white border border-border-color/50 rounded-lg p-4 text-center group hover:border-accent-color/50 hover:shadow-md transition-all"
               >
-                <h3 className="font-semibold text-text-primary group-hover:text-accent-color transition-colors">
+                <h3 className="font-semibold text-text-primary group-hover:text-accent-color transition-colors text-sm">
                   {category.name}
                 </h3>
-                <p className="text-sm text-text-secondary mt-2">{category.description}</p>
+                <p className="text-xs text-text-secondary mt-1 line-clamp-2">{category.description}</p>
               </Link>
             ))}
         </div>

@@ -103,8 +103,8 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-        <meta name="theme-color" content="#0f0f23" />
-        <meta name="msapplication-TileColor" content="#0f0f23" />
+        <meta name="theme-color" content="#22c55e" />
+        <meta name="msapplication-TileColor" content="#22c55e" />
         <link rel="dns-prefetch" href="https://game.fastgame.lol" />
         <link rel="dns-prefetch" href="https://supabase.com" />
       </head>
