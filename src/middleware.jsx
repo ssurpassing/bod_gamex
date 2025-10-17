@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-const SECRET_KEY = new TextEncoder().encode('OnlineGame');
+const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-key');
 
 export async function middleware(request) {
   const authToken = request.cookies.get('auth_token')?.value;

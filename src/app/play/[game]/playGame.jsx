@@ -1,13 +1,11 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { MdFullscreen } from "react-icons/md";
-import { useParams  } from "next/navigation";
 import NewGame from "@/components/block/newGame";
 import PlaySidebar from "@/components/block/playSidebar";
 import { FaPlayCircle } from "react-icons/fa";
 
 const PageClient = ({id}) => {
-  // const params = useSearchParams();
   const GmaeId = id;
   
 
@@ -17,11 +15,19 @@ const PageClient = ({id}) => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await fetch(`/api/game?id=${GmaeId}`);
-        const data = await response.json();
+        const response = await fetch(`/api/game?title=${encodeURIComponent(GmaeId)}`);
+        const result = await response.json();
+
+        // Handle the API response format { success: true, data: {...} }
+        const data = result.success ? result.data : result;
         setGameData(data);
       } catch (error) {
         console.error("Error fetching games:", error);
+        setGameData({
+          gameTitle: "Game Not Found",
+          gameUrl: "",
+          gameImage: "/placeholder-game.jpg"
+        });
       }
     };
 

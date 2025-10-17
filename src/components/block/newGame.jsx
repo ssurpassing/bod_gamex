@@ -1,37 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Link from "next/link";
-import { Skeleton } from "@nextui-org/skeleton";
+import { useGames } from "@/hooks/useGames";
 
-const NewGame = ({ filterData }) => {
-  const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const NewGame = ({ filterData, limit = 20 }) => {
   const scrollRef = useRef(null);
-
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        const response = await fetch("/api/game");
-        let data = await response.json();
-
-        if (filterData) {
-          data = data.filter((item) => item.gameCategory === filterData);
-        }
-
-        data.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        setGames(data);
-      } catch (error) {
-        console.error("Error fetching games:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGames();
-  }, []);
+  const { games, loading, error } = useGames(filterData, 'date', limit);
 
   const scroll = (direction) => {
     const { current } = scrollRef;
@@ -47,21 +21,21 @@ const NewGame = ({ filterData }) => {
     return (
       <div className="flex gap-4 overflow-hidden select-none">
         {Array.from({ length: 6 }).map((_, index) => (
-          <Skeleton key={index} className="h-32 w-60  rounded-md flex-shrink-0"></Skeleton>
+          <div key={index} className="h-32 w-60 bg-gray-200 rounded-md flex-shrink-0 animate-pulse" />
         ))}
       </div>
     );
   }
 
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   if (games.length === 0) {
     return (
       <div className="flex justify-center items-center h-36">
-        <p>No Game available</p>
+        <p className="text-gray-500">No games available</p>
       </div>
     );
-  };
+  }
 
   return (
     <div className="relative w-full group overflow-hidden">
@@ -79,19 +53,17 @@ const NewGame = ({ filterData }) => {
         {games.map((item) => (
           <Link
             key={item.id}
-            href={`/play/${item.id}`}
-            className="flex-shrink-0 relative overflow-hidden rounded-md"
+            href={`/play/${encodeURIComponent(item.gameTitle)}`}
+            className="flex-shrink-0 relative overflow-hidden rounded-md group"
           >
-            <div>
-              <img
-                className="h-32 w-60 rounded-md transition-border duration-300"
-                src={item.gameImage}
-                alt={item.gameTitle}
-                draggable="false"
-              />
-              <div className="absolute inset-0 bg-black/20 bg-opacity-50 hover:opacity-100 opacity-0 transition-opacity duration-300 flex items-end p-2">
-                <p className="text-xs text-white">{item.gameTitle}</p>
-              </div>
+            <img
+              className="h-32 w-60 rounded-md object-cover transition-transform duration-300 group-hover:scale-105"
+              src={item.gameImage || '/placeholder-game.jpg'}
+              alt={item.gameTitle}
+              draggable="false"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+              <p className="text-sm text-white font-medium">{item.gameTitle}</p>
             </div>
           </Link>
         ))}

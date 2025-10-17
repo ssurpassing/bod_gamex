@@ -1,50 +1,77 @@
-import { supabase } from "@/lib/firebase"; // Import the Supabase client
+import { supabase } from "@/lib/supabase";
+import { successResponse, errorResponse, validateRequest } from "@/utils/apiResponse";
 
-// GET: Fetch data by ID and increment view count
+// Helper function to format game data (snake_case to camelCase)
+const formatGameData = (game) => ({
+  id: game.id,
+  gameTitle: game.gametitle,
+  gameUrl: game.gameurl,
+  gameImage: game.gameimage,
+  gameCategory: game.gamecategory,
+  description: game.description,
+  metaKeywords: game.metakeywords,
+  metaUrl: game.metaurl,
+  view: game.view,
+  date: game.date,
+  created_at: game.created_at,
+  updated_at: game.updated_at
+});
+
+// Helper function to prepare game data for database (camelCase to snake_case)
+const prepareGameData = (data) => ({
+  gametitle: data.gameTitle,
+  gameurl: data.gameUrl,
+  gameimage: data.gameImage,
+  gamecategory: data.gameCategory,
+  description: data.description,
+  metakeywords: data.metaKeywords,
+  metaurl: data.metaUrl
+});
+
+// GET: Fetch data by ID or title and increment view count
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
+  const title = searchParams.get('title');
 
   try {
-    if (id) {
-      // Fetch specific game by ID
-      const { data: gameData, error: fetchError } = await supabase
-        .from('games')
-        .select('*')
-        .eq('id', id)
-        .single();
+    if (id || title) {
+      // Fetch specific game by ID or title
+      let query = supabase.from('games').select('*');
+
+      if (id) {
+        query = query.eq('id', id);
+      } else if (title) {
+        // Decode URL-encoded title and query by game title
+        const decodedTitle = decodeURIComponent(title);
+        query = query.eq('gametitle', decodedTitle);
+      }
+
+      const { data: gameData, error: fetchError } = await query.single();
 
       if (fetchError || !gameData) {
-        return new Response(JSON.stringify([]), { status: 404 });
+        return errorResponse('Game not found', 404);
       }
 
       // Increment view count
-      const { error: updateError } = await supabase
+      const updateQuery = supabase
         .from('games')
-        .update({ view: (gameData.view || 0) + 1 })
-        .eq('id', id);
+        .update({ view: (gameData.view || 0) + 1 });
+
+      if (id) {
+        updateQuery.eq('id', id);
+      } else if (title) {
+        updateQuery.eq('gametitle', decodeURIComponent(title));
+      }
+
+      const { error: updateError } = await updateQuery;
 
       if (updateError) {
         console.error("Error updating view count:", updateError);
       }
 
-      // Map database field names to expected camelCase names
-      const formattedGame = {
-        id: gameData.id,
-        gameTitle: gameData.gametitle,
-        gameUrl: gameData.gameurl,
-        gameImage: gameData.gameimage,
-        gameCategory: gameData.gamecategory,
-        description: gameData.description,
-        metaKeywords: gameData.metakeywords,
-        metaUrl: gameData.metaurl,
-        view: (gameData.view || 0) + 1,
-        date: gameData.date,
-        created_at: gameData.created_at,
-        updated_at: gameData.updated_at
-      };
-
-      return new Response(JSON.stringify(formattedGame), { status: 200 });
+      const formattedGame = formatGameData({ ...gameData, view: (gameData.view || 0) + 1 });
+      return successResponse(formattedGame);
     } else {
       // Fetch all games
       const { data: games, error } = await supabase
@@ -54,41 +81,31 @@ export async function GET(req) {
 
       if (error) {
         console.error("Error fetching games:", error);
-        return new Response(JSON.stringify([]), { status: 200 });
+        return errorResponse('Failed to fetch games', 500);
       }
 
-      // Map database field names to expected camelCase names
-      const formattedGames = games.map(game => ({
-        id: game.id,
-        gameTitle: game.gametitle,
-        gameUrl: game.gameurl,
-        gameImage: game.gameimage,
-        gameCategory: game.gamecategory,
-        description: game.description,
-        metaKeywords: game.metakeywords,
-        metaUrl: game.metaurl,
-        view: game.view,
-        date: game.date,
-        created_at: game.created_at,
-        updated_at: game.updated_at
-      }));
-
-      return new Response(JSON.stringify(formattedGames || []), { status: 200 });
+      const formattedGames = games.map(formatGameData);
+      return successResponse(formattedGames || []);
     }
   } catch (error) {
     console.error("Error fetching data:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch data" }), { status: 500 });
+    return errorResponse('Failed to fetch data', 500);
   }
 }
 
 // POST: Add new game
 export async function POST(req) {
   try {
-    const data = await req.json();
+    const validation = await validateRequest(req, ['gameTitle', 'gameUrl', 'gameCategory']);
+    if (!validation.isValid) {
+      return errorResponse(validation.error, 400);
+    }
+
+    const { body: data } = validation;
 
     // Prepare game data
     const gameData = {
-      ...data,
+      ...prepareGameData(data),
       date: new Date().toISOString(),
       view: 0,
       created_at: new Date().toISOString(),
@@ -103,13 +120,13 @@ export async function POST(req) {
 
     if (error) {
       console.error("Error adding game:", error);
-      return new Response(JSON.stringify({ error: "Failed to add game" }), { status: 500 });
+      return errorResponse('Failed to add game', 500);
     }
 
-    return new Response(JSON.stringify({ id: insertedGame.id, message: "Game added successfully" }), { status: 200 });
+    return successResponse({ id: insertedGame.id, message: "Game added successfully" });
   } catch (error) {
     console.error("Error adding game:", error);
-    return new Response(JSON.stringify({ error: "Failed to add game" }), { status: 500 });
+    return errorResponse('Failed to add game', 500);
   }
 }
 
@@ -120,7 +137,7 @@ export async function DELETE(req) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return new Response(JSON.stringify({ error: "ID is required in query parameters" }), { status: 400 });
+      return errorResponse('ID is required in query parameters', 400);
     }
 
     const { error } = await supabase
@@ -130,13 +147,13 @@ export async function DELETE(req) {
 
     if (error) {
       console.error("Error deleting game:", error);
-      return new Response(JSON.stringify({ error: "Failed to delete game" }), { status: 500 });
+      return errorResponse('Failed to delete game', 500);
     }
 
-    return new Response(JSON.stringify({ message: "Game deleted successfully" }), { status: 200 });
+    return successResponse({ message: "Game deleted successfully" });
   } catch (error) {
     console.error("Error deleting game:", error);
-    return new Response(JSON.stringify({ error: "Failed to delete game" }), { status: 500 });
+    return errorResponse('Failed to delete game', 500);
   }
 }
 
@@ -145,19 +162,21 @@ export async function PUT(req) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
-    const data = await req.json();
 
     if (!id) {
-      return new Response(JSON.stringify({ error: "ID is required in query parameters" }), { status: 400 });
+      return errorResponse('ID is required in query parameters', 400);
     }
 
-    if (typeof data !== 'object' || data === null) {
-      return new Response(JSON.stringify({ error: "Invalid data format" }), { status: 400 });
+    const validation = await validateRequest(req);
+    if (!validation.isValid) {
+      return errorResponse(validation.error, 400);
     }
+
+    const { body: data } = validation;
 
     // Prepare update data
     const updateData = {
-      ...data,
+      ...prepareGameData(data),
       updated_at: new Date().toISOString()
     };
 
@@ -170,16 +189,19 @@ export async function PUT(req) {
 
     if (error) {
       console.error("Error updating game:", error);
-      return new Response(JSON.stringify({ error: "Failed to update game" }), { status: 500 });
+      return errorResponse('Failed to update game', 500);
     }
 
     if (!updatedGame) {
-      return new Response(JSON.stringify({ error: "Game not found" }), { status: 404 });
+      return errorResponse('Game not found', 404);
     }
 
-    return new Response(JSON.stringify({ message: "Game updated successfully", updatedData: updatedGame }), { status: 200 });
+    return successResponse({
+      message: "Game updated successfully",
+      updatedData: formatGameData(updatedGame)
+    });
   } catch (error) {
     console.error("Error updating game:", error);
-    return new Response(JSON.stringify({ error: "Failed to update game" }), { status: 500 });
+    return errorResponse('Failed to update game', 500);
   }
 }

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/firebase"; // Import the Supabase client
+import { supabase } from "@/lib/supabase"; // Import the Supabase client
 
 // GET: Fetch category by ID or all categories
 export async function GET(req) {
