@@ -64,7 +64,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             value={formData.gameTitle}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -77,7 +77,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             value={formData.gameCategory}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select category</option>
             {SITE_CONFIG.categories.map(category => (
@@ -96,7 +96,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             value={formData.gameUrl}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -109,7 +109,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="url"
@@ -117,7 +117,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
               value={formData.gameImage}
               onChange={handleChange}
               placeholder="Or enter image URL"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           {formData.gameImage && (
@@ -140,7 +140,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             value={formData.description}
             onChange={handleChange}
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -154,7 +154,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             value={formData.metaKeywords}
             onChange={handleChange}
             placeholder="Enter keywords separated by commas"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -167,7 +167,7 @@ const GameForm = ({ game = null, onSubmit, onCancel }) => {
             name="metaUrl"
             value={formData.metaUrl}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>

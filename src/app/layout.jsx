@@ -1,7 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Headers from "@/components/template/header";
+import Footer from "@/components/template/footer";
 import { Providers } from "./providers";
+import Analytics from "@/components/analytics/Analytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,41 +13,51 @@ const inter = Inter({
 
 export const metadata = {
   title: {
-    default: 'GameX - Play Free Online Games | Instant Gaming Fun',
-    template: '%s | GameX'
+    default: 'PlayFun Games - 200+ Free Online Games | Play Instantly',
+    template: '%s | PlayFun Games'
   },
-  description: 'Discover thousands of free online games at GameX. Play instantly without downloads! Action, puzzle, sports, and multiplayer games. New games added daily.',
-  keywords: ['free online games', 'browser games', 'HTML5 games', 'mobile games', 'action games', 'puzzle games', 'multiplayer games', 'casual games'],
-  authors: [{ name: 'GameX Team' }],
-  creator: 'GameX',
-  publisher: 'GameX',
+  description: 'Play 200+ free online games instantly! No downloads required. Action, puzzle, racing, multiplayer & more. New HTML5 games added weekly. Mobile-friendly gaming platform.',
+  keywords: [
+    'free online games', 'play games online', 'browser games', 'HTML5 games',
+    'mobile games', 'instant games', 'no download games', 'action games',
+    'puzzle games', 'racing games', 'multiplayer games', 'casual games',
+    'online gaming', 'web games', 'free games', 'play free games'
+  ],
+  authors: [{ name: 'PlayFun Games Team' }],
+  creator: 'PlayFun Games',
+  publisher: 'PlayFun Games',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://gamex.com'),
+  metadataBase: new URL('https://playfungames.com'),
   alternates: {
     canonical: '/',
     languages: {
-      'en-US': '/en-US',
-      'es-ES': '/es-ES',
-      'fr-FR': '/fr-FR',
-      'de-DE': '/de-DE',
-      'pt-BR': '/pt-BR',
+      'en': '/en',
+      'es': '/es',
+      'fr': '/fr',
+      'de': '/de',
+      'pt': '/pt',
+      'it': '/it',
+      'ja': '/ja',
+      'ko': '/ko',
+      'zh': '/zh',
+      'ru': '/ru',
     },
   },
   openGraph: {
-    title: 'GameX - Play Free Online Games | Instant Gaming Fun',
-    description: 'Discover thousands of free online games at GameX. Play instantly without downloads! Action, puzzle, sports, and multiplayer games.',
-    url: 'https://gamex.com',
-    siteName: 'GameX',
+    title: 'PlayFun Games - 200+ Free Online Games | Play Instantly',
+    description: 'Play 200+ free online games instantly! No downloads required. Action, puzzle, racing, multiplayer & more.',
+    url: 'https://playfungames.com',
+    siteName: 'PlayFun Games',
     images: [
       {
-        url: 'https://gamex.com/og-image.jpg',
+        url: 'https://playfungames.com/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'GameX - Free Online Games',
+        alt: 'PlayFun Games - Free Online Gaming Platform',
       }
     ],
     locale: 'en_US',
@@ -53,9 +65,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'GameX - Play Free Online Games',
-    description: 'Discover thousands of free online games. Play instantly without downloads!',
-    images: ['https://gamex.com/twitter-image.jpg'],
+    title: 'PlayFun Games - 200+ Free Online Games',
+    description: 'Play 200+ free online games instantly! No downloads required.',
+    images: ['https://playfungames.com/twitter-image.jpg'],
   },
   robots: {
     index: true,
@@ -102,27 +114,10 @@ export default function RootLayout({ children }) {
           <main className="min-h-screen">
             {children}
           </main>
+          <Footer />
           <Analytics />
         </Providers>
       </body>
     </html>
-  );
-}
-
-// Simple analytics component
-function Analytics() {
-  return (
-    <>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'GA_MEASUREMENT_ID');
-          `
-        }}
-      />
-    </>
   );
 }
